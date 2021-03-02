@@ -12,7 +12,6 @@ def check_memoryexpress_by_model(model):
     soup = BeautifulSoup(res.data, 'html.parser')
     products = soup.find_all('div', class_="c-shca-icon-item")
 
-    # for found in (product for product in products if "out of stock" not in product.find('div', class_="c-shca-icon-item__body-inventory").span.text.lower()):
     for product in products:
         body_inventory = product.find('div', class_="c-shca-icon-item__body-inventory")
         if body_inventory is None or "out of stock" not in body_inventory.span.text.lower():
