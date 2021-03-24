@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 def check_memoryexpress_by_model():
     model_list = ['3070', '3080', '3090']
     for model in model_list:
-
         print("Checking memoryexpress for " + model + " cards")
         url = "https://www.memoryexpress.com/Category/VideoCards?Search=rtx+" + model
         res = req.request('GET', url)
@@ -63,9 +62,33 @@ req = urllib3.PoolManager()
 print('Running StockChecker...')
 attempts = 0
 
+
+def newegg_checker():
+    print("NewEgg")
+    headers = sites.NEW_EGG['HEADERS']
+    for url in sites.NEW_EGG['URLS']:
+        # url = values['url']
+        name = url.split('/')[3].replace('-', ' ').upper()
+        item_number = url.split('-_-')[1]
+        api_url = sites.NEW_EGG['API_URL'] + item_number
+        res = req.request('GET', api_url)
+        data = json.loads(res.data)
+        stock = data['MainItem']['Stock']
+        stock_for_combo = data['MainItem']['StockForCombo']
+        if stock > 0 or stock_for_combo > 0:
+            print(url)
+            webbrowser.open("https://www.newegg.ca/p/pl?d=" + name.replace(' ', '+') + "+combo")
+
+            webbrowser.open(url)
+
+        print('{0:<60}'.format(name), "|   STOCK:", '{0:<12}'.format(stock), "|   STOCKFORCOMBO:",
+              '{0:<5}'.format(stock_for_combo))
+
+
 while True:
     attempts += 1
     print("Attempts: ", attempts)
     best_buy_checker()
     check_memoryexpress_by_model()
+    newegg_checker()
     time.sleep(30)
